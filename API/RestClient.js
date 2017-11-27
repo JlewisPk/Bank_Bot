@@ -1,4 +1,5 @@
 var request = require('request');
+var bank = require('../controller/BankProcess');
 
 exports.getHelpData = function getData(url, session, username, callback){
     request.get(url, { 'headers': { 'ZUMO-API-VERSION': '2.0.0' } }, function handleGetResponse(err, res, body){
@@ -10,6 +11,15 @@ exports.getHelpData = function getData(url, session, username, callback){
     });
 };
 
+exports.getBalance2 = function getData2(url, amount, session, username, callback){
+    request.get(url, { 'headers': { 'ZUMO-API-VERSION': '2.0.0' } }, function handleGetResponse(err, res, body){
+        if(err){
+            console.log(err);
+        }else {
+            callback(body, amount, session, username);
+        }
+    });
+};
 exports.getBalance = function getData(url, session, username, callback){
     request.get(url, { 'headers': { 'ZUMO-API-VERSION': '2.0.0' } }, function handleGetResponse(err, res, body){
         if(err){
@@ -56,6 +66,8 @@ exports.AddAccount = function sendData(url, username){
       request(options, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             console.log(body);
+        } else if (!error && response.statusCode === 201) {
+            console.log(body);
         }
         else{
             console.log(error);
@@ -83,4 +95,64 @@ exports.deleteUser = function deleteData(url,session, id, callback){
         }
     })
 
+};
+
+
+exports.deductAmount = function deductAmount(url, greater, amount, session, callback){
+    var options = {
+        url: url,
+        method: 'PATCH',
+        headers: {
+            'ZUMO-API-VERSION': '2.0.0',
+            'Content-Type':'application/json'
+        },
+        json: {
+            "balance" : greater
+        }
+      };
+      
+      request(options, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            console.log(body);
+            // console.log("lol");
+            // console.log("amount from deductAmount: %s" , amount);
+            callback(body, session, amount);
+        }
+        else{
+            console.log(error);
+        }
+      });
+};
+
+exports.AddCheck = function sendData(url, session, amount, callback){
+    // console.log("WE ARE IN ADDCHECK!!!!!!!!!!");
+    // console.log(url);
+    // console.log(amount);
+    var options = {
+        url: url,
+        method: 'POST',
+        headers: {
+            'ZUMO-API-VERSION': '2.0.0',
+            'Content-Type':'application/json'
+        },
+        json: {
+            "receiverCheck" : false,
+            "amount" : amount
+        }
+      };
+      
+      request(options, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            console.log(body);
+            // console.log("WE ARE IN ADDCHECK!!!!!!!!!!");
+            callback(body,session);
+        } else if (!error && response.statusCode === 201) {
+            console.log(body);
+            // console.log("WE ARE IN ADDCHECK!!!!!!!!!!");
+            callback(body,session);
+        }
+        else{
+            console.log(error);
+        }
+      });
 };

@@ -165,6 +165,40 @@ exports.startDialog = function (bot) {
         matches: 'BankDelAcc'
     });
 
+    bot.dialog('CreateCheck', [
+        function (session, args, next) {
+            session.dialogData.args = args || {};        
+            if (!session.conversationData["username"]) {
+                builder.Prompts.text(session, "Enter a username to setup your account.");        
+            } else {
+                next(); // Skip if we already have this info.
+            }
+        },
+        function (session, results,next) {
+            if (results.response) {
+                session.conversationData["username"] = results.response;
+            }
+            if (!session.conversationData["amount"]) {
+                builder.Prompts.text(session, "Enter an amount you want to withdraw.");
+            } else {
+                next();
+            }
+        },
+        function (session,results,next) {
+            if (results.response) {
+                session.conversationData["amount"] = results.response;
+            }
+            // session.send("Hello %s!!", session.conversationData["username"]);
+            bank.addCheck(session, session.conversationData["username"], session.conversationData["amount"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+    
+        }
+                
+        
+    ]).triggerAction({
+        matches: 'CreateCheck'
+    });
+    
+    
     // bot.dialog('Currency', [
     //     function(session,args,next) {
     //     exRate = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
