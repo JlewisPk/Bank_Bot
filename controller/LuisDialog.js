@@ -203,7 +203,7 @@ exports.startDialog = function (bot) {
                 session.conversationData["amount"] = results.response;
             }
             // session.send("Hello %s!!", session.conversationData["username"]);
-            bank.addCheck(session, session.conversationData["username"], session.conversationData["amount"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+            bank.addCheque(session, session.conversationData["username"], session.conversationData["amount"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
     
         }}     
         
