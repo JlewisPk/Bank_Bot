@@ -2,6 +2,7 @@ var builder = require('botbuilder');
 var customVision = require('./CustomVision');
 var help = require('./Help');
 var bank = require('./BankProcess');
+var rest = require('../API/Restclient');
 
 // Some sections have been omitted
 //var isAttachment = false;
@@ -16,7 +17,7 @@ exports.startDialog = function (bot) {
     bot.recognizer(recognizer);
 
     //global variables here
-
+    var exRate;
 
 
     bot.dialog('None', function (session, args) {
@@ -233,6 +234,7 @@ exports.startDialog = function (bot) {
         matches: 'BankDeposit'
     })
     
+    
     // bot.dialog('Currency', [
     //     function(session,args,next) {
     //     exRate = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
@@ -253,8 +255,46 @@ exports.startDialog = function (bot) {
     //     matches: 'Currency'
     // });
 
+    bot.dialog('Currency', [
+        function(session,args,next) {
+            exRate = builder.EntityRecognizer.findEntity(args.intent.entities, 'bank');
+            
+            if (exRate === null || exRate === undefined) {
+                builder.Prompts.text(session, 'Enter the exchange rate you looking for');
+                next();
+            } else {
+                exRate = exRate.entity.toUpperCase();
+                session.send("Retreiving exchange rate...");
+                var url = 'https://openexchangerates.org/api/latest.json?app_id=bea63e3f26a64c23a25ae2320609a396'
+                rest.displayExRate(url,exRate,session, exRateDisplayer);
+            }
+        },
+        function(session, results, next) {
+            var lookingFor = results.response.toUpperCase();
+            session.send("Retreiving exchange rate...");
+            var url = 'https://openexchangerates.org/api/latest.json?app_id=bea63e3f26a64c23a25ae2320609a396'
+            rest.displayExRate(url,lookingFor,session, exRateDisplayer);
 
+        }
+    ]).triggerAction({
+        matches: 'Currency'
+    });
     
+    function exRateDisplayer(message, exRate, session) {
+        var res = JSON.parse(message).rates;
+        console.log(res);
+        var exRateFound= res[exRate];
+        if (exRateFound === null || exRateFound === undefined) {
+            session.send("Exchange rate for %s is not found",exRate);
+            session.send("Check currency you looking for is correct. Session ending...");
+            session.endConversation();
+        } else {
+            session.send("Your USD $1 is equal to %s %s", exRate, exRateFound);
+            session.send("Bye~");
+            session.endConversation();
+        }
+    }
+
     function isAttachment(session) { 
         var msg = session.message.text;
         if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {

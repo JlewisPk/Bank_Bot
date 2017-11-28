@@ -47,11 +47,10 @@ function serialValid(message, session, idExist, balanceGot, serialNumber) {
     var chequeList = JSON.parse(message);
     var isValid;
     var SNExist;
-    var amount;
     for (var index in chequeList) {
         var serialNumberListed = chequeList[index].id;
         var validityCheck = chequeList[index].receiverCheck;
-        amount = chequeList[index].amount;
+        var amount = chequeList[index].amount;
         // balance = +balance + +subBalance.toFixed(2);
         if (serialNumber.toLowerCase()===serialNumberListed.toLowerCase()) {
             isValid = validityCheck;

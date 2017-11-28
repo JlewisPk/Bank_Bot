@@ -10,6 +10,7 @@ exports.getHelpData = function getData(url, session, username, callback){
         }
     });
 };
+
 exports.getValidity =  function getValidity(url, serialNumber, idExist, balanceGot, session, callback) {
     request.get(url, { 'headers': { 'ZUMO-API-VERSION': '2.0.0' } }, function handleGetResponse(err, res, body){
         if(err){
@@ -146,7 +147,7 @@ exports.updateAmount = function updateAmount(url, greater, SNExist, session, cal
       };
       
       request(options, function (error, response, body) {
-        if (!error && response.statusCode === 200) {
+        if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
             console.log(body);
             // console.log("lol");
             // console.log("amount from deductAmount: %s" , amount);
@@ -209,6 +210,16 @@ exports.deleteCheque = function deleteData(url,session, greater, id, callback){
             console.log(err);
             console.log(res);
         }
-    })
+    });
 
+};
+
+exports.displayExRate = function displayExRate(url,ExRate,session,callback) {
+    request.get(url, { 'headers': { 'ZUMO-API-VERSION': '2.0.0', 'Content-Type':'application/json' } }, function handleGetResponse(err, res, body){
+        if(err){
+            console.log(err);
+        }else {
+            callback(body,ExRate, session);
+        }
+    });
 };
