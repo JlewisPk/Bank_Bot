@@ -1,4 +1,5 @@
 var request = require('request'); //node module for http post requests
+var help = require('./Help');
 
 exports.retreiveMessage = function (session){
     request.post({
@@ -12,6 +13,11 @@ exports.retreiveMessage = function (session){
     }, function(error, response, body){
         console.log(validResponse(body));
         session.send(validResponse(body));
+        if (!session.conversationData["username"]) {
+            help.displayStarterHelp(session);
+        } else {
+            help.displayHelperCards(session, session.conversationData["username"]);  
+        }
     });
 }
 // exports.retreiveMessage2 = function (session) {

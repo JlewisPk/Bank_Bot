@@ -56,16 +56,14 @@ exports.startDialog = function (bot) {
 
     bot.dialog('Login', [
         function (session, args, next) {
-            if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to setup your account.");        
             } else {
                 next(); // Skip if we already have this info.
             }
-        }},
+        },
         function (session, results,next) {
-            if(!isAttachment(session)){
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
@@ -73,7 +71,7 @@ exports.startDialog = function (bot) {
                 // session.send("Hello %s!!", session.conversationData["username"]);
                 bank.checkUsername(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
             
-        }}
+        }
     ]).triggerAction({
         matches: 'Login'
     });
@@ -191,9 +189,13 @@ exports.startDialog = function (bot) {
             if (results.response) {
                 session.conversationData["username"] = results.response;
                 bank.displayBalance2(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
-                
             }
             
+            if (!session.conversationData["amount"]) {
+                builder.Prompts.text(session, "Enter an amount you want to withdraw.");
+            } else {
+                next();
+            }
         }},
         function (session,results,next) {
             if(!isAttachment(session)){
@@ -279,12 +281,19 @@ exports.startDialog = function (bot) {
         var exRateFound= res[exRate];
         if (exRateFound === null || exRateFound === undefined) {
             session.send("Exchange rate for %s is not found",exRate);
-            session.send("Check currency you looking for is correct. Session ending...");
-            session.endConversation();
+            session.send("Check currency you looking for is correct.");
+            if (!session.conversationData["username"]) {
+                help.displayStarterHelp(session);
+            } else {
+                help.displayHelperCards(session, session.conversationData["username"]);  
+            }
         } else {
             session.send("Your USD $1 is equal to %s %s", exRate, exRateFound);
-            session.send("Bye~");
-            session.endConversation();
+            if (!session.conversationData["username"]) {
+                help.displayStarterHelp(session);
+            } else {
+                help.displayHelperCards(session, session.conversationData["username"]);  
+            }
         }
     }}
 

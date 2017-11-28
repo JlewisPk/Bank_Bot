@@ -27,27 +27,30 @@ exports.displayStarterHelp = function getHelpData2(session){
     .attachmentLayout(builder.AttachmentLayout.carousel)
     .attachments(attachment);
     session.send(message);
+    session.send("You can always check banknote's nationality by sending image url!");
 }
 
 
 function helpUser(message, session, username) {
     var attachment = [];
     var restaurants = JSON.parse(message);
-    var sendCall = 'balance';
+    var sendCall0 = 'balance';
     var sendCall1 = 'deposit';
     var sendCall2 = 'withdraw';
     var sendCall3 = 'payment';
     var sendCall4 = 'exchange rate';
-    var sendCall5 = 'logout';
+    var sendCall5 = 'delete';
+    var sendCall6 = 'logout';
     var card = new builder.HeroCard(session)
         .title('Hello, %s! How can I help you?', username)
         .buttons([
-            builder.CardAction.imBack(session, sendCall, 'Check Balance'),
+            builder.CardAction.imBack(session, sendCall0, 'Check Balance'),
             builder.CardAction.imBack(session, sendCall1, 'Deposit'),
             builder.CardAction.imBack(session, sendCall2, 'Withdraw'),
             builder.CardAction.imBack(session, sendCall3, 'Make Payments'),
             builder.CardAction.imBack(session, sendCall4, 'Check Exchange Rate'),
-            builder.CardAction.imBack(session, sendCall5, 'Logout')
+            builder.CardAction.imBack(session, sendCall5, 'Delete Account'),
+            builder.CardAction.imBack(session, sendCall6, 'Logout')
         ]);
     attachment.push(card);      
     //Displays restaurant hero card carousel in chat box 
@@ -55,4 +58,5 @@ function helpUser(message, session, username) {
     .attachmentLayout(builder.AttachmentLayout.carousel)
     .attachments(attachment);
     session.send(message);
+    session.send("You can always check banknote's nationality by sending image url!");
 }

@@ -15,7 +15,7 @@ function checkSerial(message, serialNumber, session, username) {
     // console.log("===at enoughBalance function =====");
     var handleUser = JSON.parse(message);
     var balanceGot;
-    var balance = parseFloat(0).toFixed(2);
+    // var balance = parseFloat(0).toFixed(2);
     var idExist;
     var amount;
     for (var index in handleUser) {
@@ -99,13 +99,13 @@ function idHolder2(message, session, greater) {
     session.send("Amount deposited:  $ %s" , res.amount);
     session.send("%s, now you have $ %s in your account!", session.conversationData["username"], greater);
     session.send("Deposit Completed!");
-    session.endConversation();
+    help.displayHelperCards(session, session.conversationData["username"]);  
 }
 
 //////////////////////// deposit finished!
 
 
-// add cheque
+// add cheque (withdraw)
 exports.displayBalance2 = function getBalance(session, username){
     var url = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
     rest.getBalance(url, session, username, handleBalanceResponse2)
@@ -133,15 +133,15 @@ function handleBalanceResponse2(message, session, username) {
     } else {// Print all favourite foods for the user that is currently logged in
         session.send("%s, your current balance is: USD %s", usernameReceived, balanceGot);
         // help.displayHelperCards(session, username);
-        if (!session.conversationData["amount"]) {
-            builder.Prompts.text(session, "Enter an amount you want to withdraw.");
-        } else {
-            next();
-        }   
+        // if (!session.conversationData["amount"]) {
+        //     builder.Prompts.text(session, "Enter an amount you want to withdraw.");
+        // } else {
+        //     next();
+        // }   
     }          
     
 }
-exports.addCheck = function addCheck(session, username, amount) {
+exports.addCheque = function addCheque(session, username, amount) {
     //var urlChequeTable = 'http://msa-lewis-bankapp.azurewebsites.net/tables/chequeTable';
     var urlAccounts = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
     // console.log(username);
@@ -212,10 +212,12 @@ function idHolder(message, session) {
     session.send("Serial Number:  %s" , message.id);
     session.send("Withdrawal Amount:  $ %s" , message.amount);
     session.send("Withdrawal Completed! Please save Serial Number provided to use cheque issued.");
-    session.send("Session ending...");
-    session.endConversation();
+    // session.send("Session ending...");
+    // session.endConversation();
+    help.displayHelperCards(session, session.conversationData["username"]);  
+
 }
-//////////////////////// add check ends
+//////////////////////// add cheque ends
 
 
 // fetching balance
@@ -320,7 +322,8 @@ function handleUserForDelete(message,session,username) {
     rest.deleteUser(url,session,idExist, handleDeletedUserResponse);
 }
 
-function handleDeletedUserResponse(body, session) {
+function handleDeletedUserResponse(message, session) {
+    session.send("%s is now deleted from the server! Session ending...", message.username);
     session.endConversation();
     console.log('Done');
 }
