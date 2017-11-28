@@ -10,6 +10,15 @@ exports.getHelpData = function getData(url, session, username, callback){
         }
     });
 };
+exports.getValidity =  function getValidity(url, serialNumber, idExist, balanceGot, session, callback) {
+    request.get(url, { 'headers': { 'ZUMO-API-VERSION': '2.0.0' } }, function handleGetResponse(err, res, body){
+        if(err){
+            console.log(err);
+        }else {
+            callback(body, session, idExist, balanceGot, serialNumber);
+        }
+    });
+};
 
 exports.getBalance2 = function getData2(url, amount, session, username, callback){
     request.get(url, { 'headers': { 'ZUMO-API-VERSION': '2.0.0' } }, function handleGetResponse(err, res, body){
@@ -123,6 +132,31 @@ exports.deductAmount = function deductAmount(url, greater, amount, session, call
         }
       });
 };
+exports.updateAmount = function updateAmount(url, greater, SNExist, session, callback){
+    var options = {
+        url: url,
+        method: 'PATCH',
+        headers: {
+            'ZUMO-API-VERSION': '2.0.0',
+            'Content-Type':'application/json'
+        },
+        json: {
+            "balance" : greater
+        }
+      };
+      
+      request(options, function (error, response, body) {
+        if (!error && response.statusCode === 200) {
+            console.log(body);
+            // console.log("lol");
+            // console.log("amount from deductAmount: %s" , amount);
+            callback(body, session, greater, SNExist);
+        }
+        else{
+            console.log(error);
+        }
+      });
+};
 
 exports.AddCheck = function sendData(url, session, amount, callback){
     // console.log("WE ARE IN ADDCHECK!!!!!!!!!!");
@@ -155,4 +189,26 @@ exports.AddCheck = function sendData(url, session, amount, callback){
             console.log(error);
         }
       });
+};
+
+exports.deleteCheque = function deleteData(url,session, greater, id, callback){
+    var options = {
+        url: url + "\\" + id,
+        method: 'DELETE',
+        headers: {
+            'ZUMO-API-VERSION': '2.0.0',
+            'Content-Type':'application/json'
+        }
+    };
+
+    request(options,function (err, res, body){
+        if( !err && res.statusCode === 200){
+            console.log(body);
+            callback(body,session,greater);
+        }else {
+            console.log(err);
+            console.log(res);
+        }
+    })
+
 };

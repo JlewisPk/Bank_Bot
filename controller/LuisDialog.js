@@ -11,7 +11,7 @@ var bank = require('./BankProcess');
 
 exports.startDialog = function (bot) {
     // Replace {YOUR_APP_ID_HERE} and {YOUR_KEY_HERE} with your LUIS app ID and your LUIS key, respectively.
-    var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/13702282-9cad-4130-8385-2e193543d98d?subscription-key=56878aa5033a475abfe27372bb74580d&verbose=true&timezoneOffset=0&q=');
+    var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/287254a8-8c2c-4782-a7aa-6039d2f3946e?subscription-key=8574fa955faf4544b341d6c1629b5bb2&verbose=true&timezoneOffset=0&q=');
     
     bot.recognizer(recognizer);
 
@@ -165,7 +165,7 @@ exports.startDialog = function (bot) {
         matches: 'BankDelAcc'
     });
 
-    bot.dialog('CreateCheck', [
+    bot.dialog('CreateCheque', [
         function (session, args, next) {
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
@@ -177,7 +177,9 @@ exports.startDialog = function (bot) {
         function (session, results,next) {
             if (results.response) {
                 session.conversationData["username"] = results.response;
+                bank.displayBalance2(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
             }
+            
             if (!session.conversationData["amount"]) {
                 builder.Prompts.text(session, "Enter an amount you want to withdraw.");
             } else {
@@ -195,9 +197,41 @@ exports.startDialog = function (bot) {
                 
         
     ]).triggerAction({
-        matches: 'CreateCheck'
+        matches: 'CreateCheque'
     });
     
+
+    bot.dialog('BankDeposit', [
+        function (session, args, next) {
+            session.dialogData.args = args || {};        
+            if (!session.conversationData["username"]) {
+                builder.Prompts.text(session, "Enter a username to setup your account.");        
+            } else {
+                next(); // Skip if we already have this info.
+            }
+        },
+        function (session, results,next) {
+            if (results.response) {
+                session.conversationData["username"] = results.response;
+            }
+            
+            if (!session.conversationData["serialNumber"]) {
+                builder.Prompts.text(session, "Enter a Serial Number to deposit.");
+            } else {
+                next();
+            }
+        },
+        function (session,results,next) {
+            if (results.response) {
+                session.conversationData["serialNumber"] = results.response;
+            }
+            // session.send("Hello %s!!", session.conversationData["username"]);
+            bank.deposit(session, session.conversationData["username"], session.conversationData["serialNumber"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+    
+        }
+    ]).triggerAction({
+        matches: 'BankDeposit'
+    })
     
     // bot.dialog('Currency', [
     //     function(session,args,next) {
