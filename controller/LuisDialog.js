@@ -19,15 +19,17 @@ exports.startDialog = function (bot) {
     //global variables here
     var exRate;
 
-
     bot.dialog('None', function (session, args) {
+        if(!isAttachment(session)){
         session.send("I don't understand your request!");
+        }
     }).triggerAction({
         matches: 'None'
     });
 
     bot.dialog('BankGreeting', 
         function (session, args, next) {
+            if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
                 // session.send("Hello !!");
@@ -36,8 +38,9 @@ exports.startDialog = function (bot) {
             } else {
                 next(); // Skip if we already have this info.
             }
-        },
+        }},
         function (session, results,next) {
+            if(!isAttachment(session)){
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
@@ -45,7 +48,7 @@ exports.startDialog = function (bot) {
                 // session.send("Hello %s!!", session.conversationData["username"]);
                 help.displayHelperCards(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
             
-        }
+        }}
     ).triggerAction({
         matches: 'BankGreeting'
     });
@@ -53,14 +56,16 @@ exports.startDialog = function (bot) {
 
     bot.dialog('Login', [
         function (session, args, next) {
+            if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to setup your account.");        
             } else {
                 next(); // Skip if we already have this info.
             }
-        },
+        }},
         function (session, results,next) {
+            if(!isAttachment(session)){
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
@@ -68,13 +73,14 @@ exports.startDialog = function (bot) {
                 // session.send("Hello %s!!", session.conversationData["username"]);
                 bank.checkUsername(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
             
-        }
+        }}
     ]).triggerAction({
         matches: 'Login'
     });
 
     bot.dialog('Logout', [
         function (session, args, next) {
+            if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (session.conversationData["username"]) {
                 session.send("Logging Off...");
@@ -83,12 +89,12 @@ exports.startDialog = function (bot) {
             } else {
                 next(); // Skip if we already have this info.
             }
-        },
+        }},
         function (session, results,next) {
-                
+            if(!isAttachment(session)){
                 session.send("No login is made before!!");
                 help.displayStarterHelp(session);  // <---- THIS LINE HERE IS WHAT WE NEED 
-            
+            }
         }
     ]).triggerAction({
         matches: 'Logout'
@@ -96,14 +102,16 @@ exports.startDialog = function (bot) {
 
     bot.dialog('BankBalance', [
         function (session, args, next) {
+            if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to log in to your account.");        
             } else {
                 next(); // Skip if we already have this info.
             }
-        },
+        }},
         function (session, results,next) {
+            if(!isAttachment(session)){
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
@@ -111,7 +119,7 @@ exports.startDialog = function (bot) {
                 
                 bank.displayBalance(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
             
-        }
+        }}
     ]).triggerAction({
         matches: 'BankBalance'
     });
@@ -119,14 +127,16 @@ exports.startDialog = function (bot) {
 
     bot.dialog('BankAddAcc', [
         function (session, args, next) {
+            if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to create your account.");        
             } else {
                 next(); // Skip if we already have this info.
             }
-        },
+        }},
         function (session, results,next) {
+            if(!isAttachment(session)){
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
@@ -134,7 +144,7 @@ exports.startDialog = function (bot) {
                 // session.send("Hello %s!! Checking your balnce. Please Wait!", session.conversationData["username"]);
                 bank.AddAccount(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
             
-        }
+        }}
     ]).triggerAction({
         matches: 'BankAddAcc'
     });
@@ -168,34 +178,32 @@ exports.startDialog = function (bot) {
 
     bot.dialog('CreateCheque', [
         function (session, args, next) {
+            if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to setup your account.");        
             } else {
                 next(); // Skip if we already have this info.
             }
-        },
+        }},
         function (session, results,next) {
+            if(!isAttachment(session)){
             if (results.response) {
                 session.conversationData["username"] = results.response;
                 bank.displayBalance2(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+                
             }
             
-            if (!session.conversationData["amount"]) {
-                builder.Prompts.text(session, "Enter an amount you want to withdraw.");
-            } else {
-                next();
-            }
-        },
+        }},
         function (session,results,next) {
+            if(!isAttachment(session)){
             if (results.response) {
                 session.conversationData["amount"] = results.response;
             }
             // session.send("Hello %s!!", session.conversationData["username"]);
             bank.addCheck(session, session.conversationData["username"], session.conversationData["amount"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
     
-        }
-                
+        }}     
         
     ]).triggerAction({
         matches: 'CreateCheque'
@@ -204,14 +212,16 @@ exports.startDialog = function (bot) {
 
     bot.dialog('BankDeposit', [
         function (session, args, next) {
+            if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to setup your account.");        
             } else {
                 next(); // Skip if we already have this info.
             }
-        },
+        }},
         function (session, results,next) {
+            if(!isAttachment(session)){
             if (results.response) {
                 session.conversationData["username"] = results.response;
             }
@@ -221,42 +231,23 @@ exports.startDialog = function (bot) {
             } else {
                 next();
             }
-        },
+        }},
         function (session,results,next) {
+            if(!isAttachment(session)){
             if (results.response) {
                 session.conversationData["serialNumber"] = results.response;
             }
             // session.send("Hello %s!!", session.conversationData["username"]);
             bank.deposit(session, session.conversationData["username"], session.conversationData["serialNumber"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
     
-        }
+        }}
     ]).triggerAction({
         matches: 'BankDeposit'
-    })
-    
-    
-    // bot.dialog('Currency', [
-    //     function(session,args,next) {
-    //     exRate = builder.EntityRecognizer.findEntity(args.intent.entities, 'food');
-    //     session.conversationData["lookingFor"] = exRate;
-    //     builder.Prompts.text(session, 'You are looking for the exchange rate of '+ exRate.entity.toUpperCase() +' based on...');
-    //     next();
-    //     },
-    //     function(session, results, next) {
-    //         var lookingFor = results.response.toUpperCase();
-    //         console.log(exRate.entity);
-    //         console.log(results.response);
-    //         var url = 'https://api.fixer.io/latest?base=' + exRate.entity;
-    //         session.send("Retreiving exchange rate...");
-    //         nutrition.displayExRate(url,session);
-
-    //     }
-    // ]).triggerAction({
-    //     matches: 'Currency'
-    // });
+    });
 
     bot.dialog('Currency', [
         function(session,args,next) {
+            if(!isAttachment(session)){
             exRate = builder.EntityRecognizer.findEntity(args.intent.entities, 'bank');
             
             if (exRate === null || exRate === undefined) {
@@ -268,19 +259,21 @@ exports.startDialog = function (bot) {
                 var url = 'https://openexchangerates.org/api/latest.json?app_id=bea63e3f26a64c23a25ae2320609a396'
                 rest.displayExRate(url,exRate,session, exRateDisplayer);
             }
-        },
+        }},
         function(session, results, next) {
+            if(!isAttachment(session)){
             var lookingFor = results.response.toUpperCase();
             session.send("Retreiving exchange rate...");
             var url = 'https://openexchangerates.org/api/latest.json?app_id=bea63e3f26a64c23a25ae2320609a396'
             rest.displayExRate(url,lookingFor,session, exRateDisplayer);
 
-        }
+        }}
     ]).triggerAction({
         matches: 'Currency'
     });
     
     function exRateDisplayer(message, exRate, session) {
+        if(!isAttachment(session)){
         var res = JSON.parse(message).rates;
         console.log(res);
         var exRateFound= res[exRate];
@@ -293,13 +286,13 @@ exports.startDialog = function (bot) {
             session.send("Bye~");
             session.endConversation();
         }
-    }
+    }}
 
     function isAttachment(session) { 
         var msg = session.message.text;
         if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
             //call custom vision
-            // customVision.retreiveMessage(session);
+            customVision.retreiveMessage(session);
     
             return true;
         }
@@ -307,5 +300,24 @@ exports.startDialog = function (bot) {
             return false;
         }
     }
+
+    // function isAttachment(session) { 
+    //     var msg = session.message.text;
+        
+    //     if (session.message.attachments) {
+    //         //call custom vision
+    //         if (msg.includes("http")) {
+    //             customVision.retreiveMessage(session);
+    //         } else if (session.message.attachments[0].contentType !== undefined) {
+    //             console.log("Attachement ContentType = %s", session.message.attachments[0].contentType);
+    //             customVision.retreiveMessage2(session);
+    //         }
+    
+    //         return true;
+    //     }
+    //     else {
+    //         return false;
+    //     }
+    // }
 
 }

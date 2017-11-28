@@ -132,7 +132,12 @@ function handleBalanceResponse2(message, session, username) {
         
     } else {// Print all favourite foods for the user that is currently logged in
         session.send("%s, your current balance is: USD %s", usernameReceived, balanceGot);
-        // help.displayHelperCards(session, username);    
+        // help.displayHelperCards(session, username);
+        if (!session.conversationData["amount"]) {
+            builder.Prompts.text(session, "Enter an amount you want to withdraw.");
+        } else {
+            next();
+        }   
     }          
     
 }
@@ -207,6 +212,7 @@ function idHolder(message, session) {
     session.send("Serial Number:  %s" , message.id);
     session.send("Withdrawal Amount:  $ %s" , message.amount);
     session.send("Withdrawal Completed! Please save Serial Number provided to use cheque issued.");
+    session.send("Session ending...");
     session.endConversation();
 }
 //////////////////////// add check ends
