@@ -3,11 +3,11 @@ var help = require('./Help');
 
 exports.retreiveMessage = function (session){
     request.post({
-        url: 'https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/73f17766-0221-4ccf-9507-9d0a363526b0/url?iterationId=a7989323-a544-4914-b9b6-dced6f12af6e',
+        url: 'https://southcentralus.api.cognitive.microsoft.com/customvision/v1.0/Prediction/cfdf1f29-b6db-4ae8-b310-57d3ed8e2245/url?iterationId=901f6731-2735-42ba-940a-b23f994a6db3',
         json: true,
         headers: {
             'Content-Type': 'application/json',
-            'Prediction-Key': '34b1b52fbb324d699cd3e52debec4c37'
+            'Prediction-Key': '2c8600cda0a845ee834da798650406f7'
         },
         body: { 'Url': session.message.text }
     }, function(error, response, body){
