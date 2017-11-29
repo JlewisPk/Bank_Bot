@@ -46,11 +46,7 @@ function handleBalanceResponse3(message, session, username) {
         
     } else {
         session.conversationData["fromPayments"] = true;
-<<<<<<< HEAD
         var urlAccounts = 'http://lewispkjang.azurewebsites.net/tables/accounts';
-=======
-        var urlAccounts = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
->>>>>>> 328ffe281ce772d9df77e102e62d82ac90b02d66
         rest.getBalance2(urlAccounts, session.conversationData["payamount"], session, session.conversationData["username"], enoughBalance);
     }          
     
@@ -61,11 +57,7 @@ function handleBalanceResponse3(message, session, username) {
 
 // Deposit Money
 exports.deposit = function deposit(session, username, serialNumber) {
-<<<<<<< HEAD
     var urlAccounts = 'http://lewispkjang.azurewebsites.net/tables/accounts';
-=======
-    var urlAccounts = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
->>>>>>> 328ffe281ce772d9df77e102e62d82ac90b02d66
     rest.getBalance2(urlAccounts, serialNumber, session, username, checkSerial);
 }
 function checkSerial(message, serialNumber, session, username) {
@@ -88,11 +80,7 @@ function checkSerial(message, serialNumber, session, username) {
         session.endConversation();
         
     } else {
-<<<<<<< HEAD
         var urlChequeTable = 'http://lewispkjang.azurewebsites.net/tables/chequeTable';
-=======
-        var urlChequeTable = 'http://msa-lewis-bankapp.azurewebsites.net/tables/chequeTable';
->>>>>>> 328ffe281ce772d9df77e102e62d82ac90b02d66
         rest.getValidity(urlChequeTable, serialNumber, idExist, balanceGot, session, serialValid);
         
     }          
@@ -126,21 +114,13 @@ function serialValid(message, session, idExist, balanceGot, serialNumber) {
     var greater = +parseFloat(balanceGot).toFixed(2) + +amount;
     greater = parseFloat(greater);
     greater = greater.toFixed(2);
-<<<<<<< HEAD
     var urlAccounts = 'http://lewispkjang.azurewebsites.net/tables/accounts/' + idExist;
-=======
-    var urlAccounts = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts/' + idExist;
->>>>>>> 328ffe281ce772d9df77e102e62d82ac90b02d66
     
     rest.updateAmount(urlAccounts, greater, SNExist, session, beforeIDHolder2);
 }
 
 function beforeIDHolder2(message, session, greater, SNExist) {
-<<<<<<< HEAD
     var urlChequeTable = 'http://lewispkjang.azurewebsites.net/tables/chequeTable';
-=======
-    var urlChequeTable = 'http://msa-lewis-bankapp.azurewebsites.net/tables/chequeTable';
->>>>>>> 328ffe281ce772d9df77e102e62d82ac90b02d66
     rest.deleteCheque(urlChequeTable, session, greater, SNExist, idHolder2);
 }
 
@@ -196,11 +176,7 @@ function handleBalanceResponse2(message, session, username) {
     
 }
 exports.addCheque = function addCheque(session, username, amount) {
-<<<<<<< HEAD
     var urlAccounts = 'http://lewispkjang.azurewebsites.net/tables/accounts';
-=======
-    var urlAccounts = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
->>>>>>> 328ffe281ce772d9df77e102e62d82ac90b02d66
     rest.getBalance2(urlAccounts, amount, session, username, enoughBalance);
 }
 function enoughBalance(message, amount, session, username) {
@@ -234,11 +210,7 @@ function enoughBalance(message, amount, session, username) {
         greater = parseFloat(greater).toFixed(2);
         console.log(greater);
         if (greater >= 0.00) {
-<<<<<<< HEAD
             var urlAccounts = 'http://lewispkjang.azurewebsites.net/tables/accounts/' + idExist;
-=======
-            var urlAccounts = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts/' + idExist;
->>>>>>> 328ffe281ce772d9df77e102e62d82ac90b02d66
             rest.deductAmount(urlAccounts, greater, amount, session, beforeIDHolder);
         } else {
             session.send("Not enough money in the account! Session terminated.");
@@ -248,11 +220,7 @@ function enoughBalance(message, amount, session, username) {
     
 }
 function beforeIDHolder(message, session, amount) {
-<<<<<<< HEAD
     var urlChequeTable = 'http://lewispkjang.azurewebsites.net/tables/chequeTable';
-=======
-    var urlChequeTable = 'http://msa-lewis-bankapp.azurewebsites.net/tables/chequeTable';
->>>>>>> 328ffe281ce772d9df77e102e62d82ac90b02d66
     rest.AddCheck(urlChequeTable, session, amount, idHolder);
 }
 
