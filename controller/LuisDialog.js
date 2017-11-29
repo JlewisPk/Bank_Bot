@@ -247,6 +247,53 @@ exports.startDialog = function (bot) {
         matches: 'BankDeposit'
     });
 
+    bot.dialog('BankPayments', [
+        function (session, args, next) {
+            if(!isAttachment(session)){
+            session.dialogData.args = args || {};        
+            if (!session.conversationData["username"]) {
+                builder.Prompts.text(session, "Enter a username to setup your account.");        
+            } else {
+                next(); // Skip if we already have this info.
+            }
+        }},
+        function(session,results,next) {
+            if(!isAttachment(session)){
+                if (results.response) {
+                    session.conversationData["username"] = results.response;
+                }
+                // var paymentReceiver = builder.EntityRecognizer.findEntity(args.intent.entities, 'bank');
+                if (!session.conversationData["receiver"]) {
+                    builder.Prompts.text(session, 'Enter the receiver ID ');
+                } else {
+                    next(); // Skip if we already have this info.
+                }
+        }},
+        function(session, results, next) {
+            if(!isAttachment(session)){
+            if (!session.conversationData["receiver"]) {
+                session.conversationData["receiver"] = results.response;
+            }
+            if (!session.conversationData["payamount"]) {
+                builder.Prompts.text(session, 'Enter the amount you want to pay ');
+            } 
+            else {
+                next(); // Skip if we already have this info.
+            }
+        }},
+        function(session, results, next) {
+            if(!isAttachment(session)){
+            if (!session.conversationData["payamount"]) {
+                session.conversationData["payamount"] = results.response;
+            }
+            session.send("%s, we are processing payment to %s...", session.conversationData["username"],session.conversationData["receiver"]);
+            bank.displayId(session);
+
+        }}
+    ]).triggerAction({
+        matches: 'BankPayments'
+    });
+
     bot.dialog('Currency', [
         function(session,args,next) {
             if(!isAttachment(session)){
@@ -295,7 +342,7 @@ exports.startDialog = function (bot) {
                 help.displayHelperCards(session, session.conversationData["username"]);  
             }
         }
-    }}
+    }};
 
     function isAttachment(session) { 
         var msg = session.message.text;

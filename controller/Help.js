@@ -37,7 +37,7 @@ function helpUser(message, session, username) {
     var sendCall0 = 'balance';
     var sendCall1 = 'deposit';
     var sendCall2 = 'withdraw';
-    var sendCall3 = 'payment';
+    var sendCall3 = 'payments';
     var sendCall4 = 'exchange rate';
     var sendCall5 = 'delete';
     var sendCall6 = 'logout';

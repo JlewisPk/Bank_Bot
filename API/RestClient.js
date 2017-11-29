@@ -69,7 +69,7 @@ exports.AddAccount = function sendData(url, username){
         },
         json: {
             "username" : username,
-            "balance" : "0"
+            "balance" : "0.00"
         }
       };
       

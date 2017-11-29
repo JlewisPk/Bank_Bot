@@ -2,6 +2,74 @@ var rest = require('../API/Restclient');
 var builder = require('botbuilder');
 var help = require('./Help');
 
+// Make Payment
+exports.displayId = function getId(session){
+    var url = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
+    rest.checkUsername(url, session, session.conversationData["receiver"], receiverFound);
+};
+function receiverFound(message,session,receiver) {
+    var handleExistance = JSON.parse(message);
+    var idExist;
+    for (var index in handleExistance) {
+        var usernameReceived = handleExistance[index].username;
+        if (receiver.toLowerCase() ===usernameReceived.toLowerCase()) {
+            idExist = handleExistance[index].id;
+        }
+    }
+    if (idExist === null || idExist === undefined) {
+        session.send("Receiver ID does not exist in the server! Please check Receiver Name!");
+        session.endConversation();
+    } else {
+        var url = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
+        rest.getBalance(url,session, session.conversationData["username"],handleBalanceResponse3);
+    }
+}
+function handleBalanceResponse3(message, session, username) {
+    var handleBalanceResponse = JSON.parse(message);
+    var balanceGot;
+    var balance = parseFloat(0).toFixed(2);
+    var idExist;
+    for (var index in handleBalanceResponse) {
+        var usernameReceived = handleBalanceResponse[index].username;
+        var subBalance = parseFloat(handleBalanceResponse[index].balance);
+        // balance = +balance + +subBalance.toFixed(2);
+        if (username.toLowerCase()===usernameReceived.toLowerCase()) {
+            balanceGot = subBalance.toFixed(2);
+            idExist = handleBalanceResponse[index].id;;
+            break;
+        }
+    }
+    if (idExist === null || idExist === undefined) {
+        session.send("There is no matching Username in the system!");
+        session.send("Please try again after creating account!");
+        session.endConversation();
+        
+    } else {// Print all favourite foods for the user that is currently logged in
+        //session.send("%s, your current balance is: USD %s", usernameReceived, balanceGot);
+        // if (balanceGot >= parseFloat(session.conversationData["payamount"]).toFixed(2)) {
+        //     session.send("Sending USD %s to %s",session.conversationData["payamount"],session.conversationData["receiver"]);
+        //     session.conversationData["fromPayments"] = true;
+        //     var url = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
+        //     rest.getBalance(url, session, session.conversationData["username"], handleBalanceResponse2);
+        // } else {
+        //     session.send("You have not enough balance to make this payment.");
+        //     session.send("Session ending...");
+        //     session.conversationData["receiver"] = undefined;
+        //     session.conversationData["payamount"] = undefined;
+        //     help.displayHelperCards(session, session.conversationData["username"]);  
+        // }
+        session.conversationData["fromPayments"] = true;
+        //var url = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
+        var urlAccounts = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
+        //addCheque(session, session.conversationData["username"], session.conversationData["amount"]);
+        // rest.getBalance(url, session, session.conversationData["username"], handleBalanceResponse2);
+        rest.getBalance2(urlAccounts, session.conversationData["payamount"], session, session.conversationData["username"], enoughBalance);
+    }          
+    
+}
+
+////////////////////////// payment done.
+
 // Deposit Money
 exports.deposit = function deposit(session, username, serialNumber) {
     //var urlChequeTable = 'http://msa-lewis-bankapp.azurewebsites.net/tables/chequeTable';
@@ -23,7 +91,7 @@ function checkSerial(message, serialNumber, session, username) {
         var subBalance = parseFloat(handleUser[index].balance);
         // balance = +balance + +subBalance.toFixed(2);
         if (username.toLowerCase()===usernameReceived.toLowerCase()) {
-            balanceGot = subBalance.toFixed(2);
+            balanceGot = parseFloat(subBalance).toFixed(2);
             idExist = handleUser[index].id;;
             break;
         }
@@ -69,7 +137,7 @@ function serialValid(message, session, idExist, balanceGot, serialNumber) {
     }
     amount = parseFloat(amount);
     amount = amount.toFixed(2);
-    var greater = +balanceGot + +amount;
+    var greater = +parseFloat(balanceGot).toFixed(2) + +amount;
     greater = parseFloat(greater);
     greater = greater.toFixed(2);
     // console.log("====balancegot = %s",balanceGot);
@@ -92,14 +160,22 @@ function beforeIDHolder2(message, session, greater, SNExist) {
 }
 
 function idHolder2(message, session, greater) {
-    //console.log("IN idHolder");
-    var res = JSON.parse(message);
-    // console.log("========id1 is %s", res.id);
-    session.send("Serial Number %s has been terminated!" , res.id);
-    session.send("Amount deposited:  $ %s" , res.amount);
-    session.send("%s, now you have $ %s in your account!", session.conversationData["username"], greater);
-    session.send("Deposit Completed!");
-    help.displayHelperCards(session, session.conversationData["username"]);  
+    if (!session.conversationData["fromPayments"]) {
+        //console.log("IN idHolder");
+        var res = JSON.parse(message);
+        // console.log("========id1 is %s", res.id);
+        session.send("Serial Number %s has been terminated!" , res.id);
+        session.send("Amount deposited:  $ %s" , res.amount);
+        session.send("%s, now you have $ %s in your account!", session.conversationData["username"], greater);
+        session.send("Deposit Completed!");
+        help.displayHelperCards(session, session.conversationData["username"]);  
+    } else {
+        session.send("Payment Finished!");
+        session.conversationData["fromPayments"]= undefined;
+        session.conversationData["receiver"]= undefined;
+        session.conversationData["payamount"]= undefined;
+        help.displayHelperCards(session, session.conversationData["username"]);  
+    }
 }
 
 //////////////////////// deposit finished!
@@ -131,7 +207,9 @@ function handleBalanceResponse2(message, session, username) {
         session.endConversation();
         
     } else {// Print all favourite foods for the user that is currently logged in
-        session.send("%s, your current balance is: USD %s", usernameReceived, balanceGot);
+        if (!session.conversationData["fromPayments"]) {
+            session.send("%s, your current balance is: USD %s", usernameReceived, balanceGot);
+        }
         // help.displayHelperCards(session, username);
         // if (!session.conversationData["amount"]) {
         //     builder.Prompts.text(session, "Enter an amount you want to withdraw.");
@@ -180,8 +258,8 @@ function enoughBalance(message, amount, session, username) {
         amount = amount.toFixed(2);
         // console.log("====balancegot = %s",balanceGot);
         // console.log("====amount = %s",amount);
-        var greater = +balanceGot - +amount;
-        greater.toFixed(2);
+        var greater = +parseFloat(balanceGot).toFixed(2) - +amount;
+        greater = parseFloat(greater).toFixed(2);
         console.log(greater);
         if (greater >= 0.00) {
             //var urlChequeTable = 'http://msa-lewis-bankapp.azurewebsites.net/tables/chequeTable';
@@ -207,14 +285,19 @@ function beforeIDHolder(message, session, amount) {
 }
 
 function idHolder(message, session) {
-    //console.log("IN idHolder");
-    console.log("========id1 is %s", message.id);
-    session.send("Serial Number:  %s" , message.id);
-    session.send("Withdrawal Amount:  $ %s" , message.amount);
-    session.send("Withdrawal Completed! Please save Serial Number provided to use cheque issued.");
-    // session.send("Session ending...");
-    // session.endConversation();
-    help.displayHelperCards(session, session.conversationData["username"]);  
+    if (!session.conversationData["fromPayments"]) {
+        //console.log("IN idHolder");
+        console.log("========id1 is %s", message.id);
+        session.send("Serial Number:  %s" , message.id);
+        session.send("Withdrawal Amount:  $ %s" , message.amount);
+        session.send("Withdrawal Completed! Please save Serial Number provided to use cheque issued.");
+        // session.send("Session ending...");
+        // session.endConversation();
+        help.displayHelperCards(session, session.conversationData["username"]);  
+    } else {
+        var urlAccounts = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
+        rest.getBalance2(urlAccounts, message.id, session, session.conversationData["receiver"], checkSerial);
+    }
 
 }
 //////////////////////// add cheque ends
@@ -323,7 +406,7 @@ function handleUserForDelete(message,session,username) {
 }
 
 function handleDeletedUserResponse(message, session) {
-    session.send("%s is now deleted from the server! Session ending...", message.username);
+    session.send("The account is now deleted from the server! Session ending...");
     session.endConversation();
     console.log('Done');
 }
