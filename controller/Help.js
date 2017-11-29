@@ -2,7 +2,6 @@ var rest = require('../API/Restclient');
 var builder = require('botbuilder');
 
 
-//Calls 'getNutritionData' in RestClient.js with 'getFoodNutrition' as callback to get ndbno of food
 exports.displayHelperCards = function getHelpData(session, username){
     var url = 'http://msa-lewis-bankapp.azurewebsites.net/tables/accounts';
     rest.getHelpData(url, session,username, helpUser);
@@ -21,8 +20,7 @@ exports.displayStarterHelp = function getHelpData2(session){
             builder.CardAction.imBack(session, sendCall1, 'Create Account'),
             builder.CardAction.imBack(session, sendCall2, 'Check Exchange Rate')
         ]);
-    attachment.push(card);      
-    //Displays restaurant hero card carousel in chat box 
+    attachment.push(card);
     var message = new builder.Message(session)
     .attachmentLayout(builder.AttachmentLayout.carousel)
     .attachments(attachment);
@@ -52,8 +50,7 @@ function helpUser(message, session, username) {
             builder.CardAction.imBack(session, sendCall5, 'Delete Account'),
             builder.CardAction.imBack(session, sendCall6, 'Logout')
         ]);
-    attachment.push(card);      
-    //Displays restaurant hero card carousel in chat box 
+    attachment.push(card);
     var message = new builder.Message(session)
     .attachmentLayout(builder.AttachmentLayout.carousel)
     .attachments(attachment);

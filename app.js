@@ -1,7 +1,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var luis = require('./controller/LuisDialog');
-// Some sections have been omitted
+
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -11,8 +11,8 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
-    appID:'',
-    appPassword:''
+    appID:'c1a21195-f43b-4516-a940-b7dd2af70d8d',
+    appPassword:'pqgjOQHAC9=|xiyUL8004#_'
 });
 
 // Listen for messages from users 
