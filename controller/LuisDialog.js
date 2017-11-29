@@ -4,15 +4,10 @@ var help = require('./Help');
 var bank = require('./BankProcess');
 var rest = require('../API/Restclient');
 
-// Some sections have been omitted
-//var isAttachment = false;
-
-
-
 
 exports.startDialog = function (bot) {
     // Replace {YOUR_APP_ID_HERE} and {YOUR_KEY_HERE} with your LUIS app ID and your LUIS key, respectively.
-    var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/287254a8-8c2c-4782-a7aa-6039d2f3946e?subscription-key=8574fa955faf4544b341d6c1629b5bb2&verbose=true&timezoneOffset=0&q=');
+    var recognizer = new builder.LuisRecognizer('https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/86c0ca75-cba1-4cfe-972c-187b6169a382?subscription-key=56878aa5033a475abfe27372bb74580d&verbose=true&timezoneOffset=0&q=');
     
     bot.recognizer(recognizer);
 
@@ -32,11 +27,10 @@ exports.startDialog = function (bot) {
             if(!isAttachment(session)){
             session.dialogData.args = args || {};        
             if (!session.conversationData["username"]) {
-                // session.send("Hello !!");
-                help.displayStarterHelp(session);  // <---- THIS LINE HERE IS WHAT WE NEED 
+                help.displayStarterHelp(session);
                    
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function (session, results,next) {
@@ -44,10 +38,7 @@ exports.startDialog = function (bot) {
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
-                
-                // session.send("Hello %s!!", session.conversationData["username"]);
-                help.displayHelperCards(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
-            
+                help.displayHelperCards(session, session.conversationData["username"]);
         }}
     ).triggerAction({
         matches: 'BankGreeting'
@@ -60,17 +51,14 @@ exports.startDialog = function (bot) {
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to setup your account.");        
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         },
         function (session, results,next) {
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
-                
-                // session.send("Hello %s!!", session.conversationData["username"]);
-                bank.checkUsername(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
-            
+                bank.checkUsername(session, session.conversationData["username"]);
         }
     ]).triggerAction({
         matches: 'Login'
@@ -85,13 +73,13 @@ exports.startDialog = function (bot) {
                 session.endConversation();
                 session.send("Successfully logged off!");  
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function (session, results,next) {
             if(!isAttachment(session)){
                 session.send("No login is made before!!");
-                help.displayStarterHelp(session);  // <---- THIS LINE HERE IS WHAT WE NEED 
+                help.displayStarterHelp(session);
             }
         }
     ]).triggerAction({
@@ -105,7 +93,7 @@ exports.startDialog = function (bot) {
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to log in to your account.");        
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function (session, results,next) {
@@ -130,7 +118,7 @@ exports.startDialog = function (bot) {
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to create your account.");        
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function (session, results,next) {
@@ -138,10 +126,7 @@ exports.startDialog = function (bot) {
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
-                
-                // session.send("Hello %s!! Checking your balnce. Please Wait!", session.conversationData["username"]);
-                bank.AddAccount(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
-            
+                bank.AddAccount(session, session.conversationData["username"]);
         }}
     ]).triggerAction({
         matches: 'BankAddAcc'
@@ -154,12 +139,11 @@ exports.startDialog = function (bot) {
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to log in to your account first.");
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function (session, results,next) {
             if(!isAttachment(session)){
-            //Add this code in otherwise your username will not work.
             if (results.response) {
                 session.conversationData["username"] = results.response;
             }
@@ -167,7 +151,7 @@ exports.startDialog = function (bot) {
             session.send("You want to delete this account.");
             
             session.send('Deleting \'%s\'...', session.conversationData["username"]);
-            bank.deleteUser(session, session.conversationData["username"]); //<--- CALLL WE WANT
+            bank.deleteUser(session, session.conversationData["username"]);
         }
     }
     ]).triggerAction({
@@ -181,14 +165,14 @@ exports.startDialog = function (bot) {
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to setup your account.");        
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function (session, results,next) {
             if(!isAttachment(session)){
             if (results.response) {
                 session.conversationData["username"] = results.response;
-                bank.displayBalance2(session, session.conversationData["username"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
+                bank.displayBalance2(session, session.conversationData["username"]);
             }
             
             if (!session.conversationData["amount"]) {
@@ -202,9 +186,7 @@ exports.startDialog = function (bot) {
             if (results.response) {
                 session.conversationData["amount"] = results.response;
             }
-            // session.send("Hello %s!!", session.conversationData["username"]);
-            bank.addCheque(session, session.conversationData["username"], session.conversationData["amount"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
-    
+            bank.addCheque(session, session.conversationData["username"], session.conversationData["amount"]);   
         }}     
         
     ]).triggerAction({
@@ -219,7 +201,7 @@ exports.startDialog = function (bot) {
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to setup your account.");        
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function (session, results,next) {
@@ -227,7 +209,6 @@ exports.startDialog = function (bot) {
             if (results.response) {
                 session.conversationData["username"] = results.response;
             }
-            
             if (!session.conversationData["serialNumber"]) {
                 builder.Prompts.text(session, "Enter a Serial Number to deposit.");
             } else {
@@ -239,9 +220,7 @@ exports.startDialog = function (bot) {
             if (results.response) {
                 session.conversationData["serialNumber"] = results.response;
             }
-            // session.send("Hello %s!!", session.conversationData["username"]);
-            bank.deposit(session, session.conversationData["username"], session.conversationData["serialNumber"]);  // <---- THIS LINE HERE IS WHAT WE NEED 
-    
+            bank.deposit(session, session.conversationData["username"], session.conversationData["serialNumber"]);
         }}
     ]).triggerAction({
         matches: 'BankDeposit'
@@ -254,7 +233,7 @@ exports.startDialog = function (bot) {
             if (!session.conversationData["username"]) {
                 builder.Prompts.text(session, "Enter a username to setup your account.");        
             } else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function(session,results,next) {
@@ -262,11 +241,10 @@ exports.startDialog = function (bot) {
                 if (results.response) {
                     session.conversationData["username"] = results.response;
                 }
-                // var paymentReceiver = builder.EntityRecognizer.findEntity(args.intent.entities, 'bank');
                 if (!session.conversationData["receiver"]) {
                     builder.Prompts.text(session, 'Enter the receiver ID ');
                 } else {
-                    next(); // Skip if we already have this info.
+                    next();
                 }
         }},
         function(session, results, next) {
@@ -278,7 +256,7 @@ exports.startDialog = function (bot) {
                 builder.Prompts.text(session, 'Enter the amount you want to pay ');
             } 
             else {
-                next(); // Skip if we already have this info.
+                next();
             }
         }},
         function(session, results, next) {
@@ -324,7 +302,6 @@ exports.startDialog = function (bot) {
     function exRateDisplayer(message, exRate, session) {
         if(!isAttachment(session)){
         var res = JSON.parse(message).rates;
-        console.log(res);
         var exRateFound= res[exRate];
         if (exRateFound === null || exRateFound === undefined) {
             session.send("Exchange rate for %s is not found",exRate);
@@ -347,33 +324,12 @@ exports.startDialog = function (bot) {
     function isAttachment(session) { 
         var msg = session.message.text;
         if ((session.message.attachments && session.message.attachments.length > 0) || msg.includes("http")) {
-            //call custom vision
             customVision.retreiveMessage(session);
-    
             return true;
         }
         else {
             return false;
         }
     }
-
-    // function isAttachment(session) { 
-    //     var msg = session.message.text;
-        
-    //     if (session.message.attachments) {
-    //         //call custom vision
-    //         if (msg.includes("http")) {
-    //             customVision.retreiveMessage(session);
-    //         } else if (session.message.attachments[0].contentType !== undefined) {
-    //             console.log("Attachement ContentType = %s", session.message.attachments[0].contentType);
-    //             customVision.retreiveMessage2(session);
-    //         }
-    
-    //         return true;
-    //     }
-    //     else {
-    //         return false;
-    //     }
-    // }
 
 }
