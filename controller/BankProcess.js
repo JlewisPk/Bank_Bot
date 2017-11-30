@@ -280,7 +280,6 @@ function handleUndefinedUser(message,session,username) {
     var handleExistance = JSON.parse(message);
     var idExist;
     for (var index in handleExistance) {
-        console.log(handleExistance)
         var usernameReceived = handleExistance[index].username;
         if (username.toLowerCase() ===usernameReceived.toLowerCase()) {
             idExist = handleExistance[index].id;
